@@ -1,4 +1,4 @@
-Real-Time Chat Application with Firebase
+## Real-Time Chat Application with Firebase
 
 Overview
 
@@ -29,7 +29,9 @@ JavaScript - For building the client-side functionality.
 Installation & Setup
 
 ## Clone the repository:
+
 git clone https://github.com/Shnekithaa/firebase-chat-app.git
+
 cd chat
 
 ## Set up Firebase:
