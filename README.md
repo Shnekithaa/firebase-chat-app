@@ -30,7 +30,7 @@ Installation & Setup
 
 ## Clone the repository:
 git clone https://github.com/Shnekithaa/firebase-chat-app.git
-cd your-repo
+cd chat
 
 ## Set up Firebase:
 ## - Create a Firebase project at https://console.firebase.google.com/
@@ -38,18 +38,15 @@ cd your-repo
 ## - Enable Firebase Storage for image uploads.
 ## - Get your Firebase config object from Firebase Console and replace it in your project.
 
-## Install dependencies (if applicable):
-npm install  # If using Node.js
+## Install dependencies:
+npm install  
 
 ## Run the application:
 npm start  
 
-Usage
+## Usage
 
 - Sign up or log in with your credentials.
-
 - Start a new chat and send text messages.
-
 - Upload and share images in the chat.
-
 - View messages in real-time.
