@@ -28,28 +28,28 @@ JavaScript - For building the client-side functionality.
 
 Installation & Setup
 
-# Clone the repository:
-git clone https://github.com/yourusername/your-repo.git
+## Clone the repository:
+git clone https://github.com/Shnekithaa/firebase-chat-app.git
 cd your-repo
 
-# Set up Firebase:
-# - Create a Firebase project at https://console.firebase.google.com/
-# - Enable Firestore Database and Firebase Authentication (Email/Password or other preferred methods)
-# - Enable Firebase Storage for image uploads.
-# - Get your Firebase config object from Firebase Console and replace it in your project.
+## Set up Firebase:
+## - Create a Firebase project at https://console.firebase.google.com/
+## - Enable Firestore Database and Firebase Authentication (Email/Password or other preferred methods)
+## - Enable Firebase Storage for image uploads.
+## - Get your Firebase config object from Firebase Console and replace it in your project.
 
-# Install dependencies (if applicable):
+## Install dependencies (if applicable):
 npm install  # If using Node.js
 
-# Run the application:
-npm start  # If using a build tool like Vite or Webpack
+## Run the application:
+npm start  
 
 Usage
 
-Sign up or log in with your credentials.
+- Sign up or log in with your credentials.
 
-Start a new chat and send text messages.
+- Start a new chat and send text messages.
 
-Upload and share images in the chat.
+- Upload and share images in the chat.
 
-View messages in real-time.
+- View messages in real-time.
