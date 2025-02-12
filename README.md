@@ -33,10 +33,10 @@ git clone https://github.com/Shnekithaa/firebase-chat-app.git
 cd chat
 
 ## Set up Firebase:
-## - Create a Firebase project at https://console.firebase.google.com/
-## - Enable Firestore Database and Firebase Authentication (Email/Password or other preferred methods)
-## - Enable Firebase Storage for image uploads.
-## - Get your Firebase config object from Firebase Console and replace it in your project.
+ - Create a Firebase project at https://console.firebase.google.com/
+ - Enable Firestore Database and Firebase Authentication (Email/Password or other preferred methods)
+ - Enable Firebase Storage for image uploads.
+ - Get your Firebase config object from Firebase Console and replace it in your project.
 
 ## Install dependencies:
 npm install  
