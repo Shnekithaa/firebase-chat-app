@@ -4,6 +4,7 @@ import {
   arrayUnion,
   collection,
   doc,
+  getDoc,
   getDocs,
   query,
   serverTimestamp,
@@ -51,23 +52,33 @@ const AddUser = ({ onClose }) => {
   }, [searchTerm, currentUser.id]);
 
   const handleAdd = async (user) => {
-    const chatRef = collection(db, "chats");
-    const userChatsRef = collection(db, "userchats");
+    // Reference to the user chats collection
+    const userChatsRef = doc(db, "userchats", currentUser.id);
     try {
+      // Get the current user's existing chat data
+      const userChatsSnap = await getDoc(userChatsRef);
+      const existingChats = userChatsSnap.exists() ? userChatsSnap.data().chats || [] : [];
+
+      // Check if the selected user is already in the current user's chat list
+      const alreadyExists = existingChats.some(
+        (chat) => chat.receiverId === user.id
+      );
+
+      if (alreadyExists) {
+        alert("User is already in your chat list.");
+        return;
+      }
+
+      // Create a new chat document
+      const chatRef = collection(db, "chats");
       const newChatRef = doc(chatRef);
       await setDoc(newChatRef, {
         createdAt: serverTimestamp(),
         messages: [],
       });
-      await updateDoc(doc(userChatsRef, user.id), {
-        chats: arrayUnion({
-          chatId: newChatRef.id,
-          lastMessage: "",
-          receiverId: currentUser.id,
-          updatedAt: Date.now(),
-        }),
-      });
-      await updateDoc(doc(userChatsRef, currentUser.id), {
+
+      // Update the current user's chat list with the new chat
+      await updateDoc(userChatsRef, {
         chats: arrayUnion({
           chatId: newChatRef.id,
           lastMessage: "",
@@ -75,6 +86,18 @@ const AddUser = ({ onClose }) => {
           updatedAt: Date.now(),
         }),
       });
+
+      // Update the selected user's chat list with the new chat
+      const otherUserChatsRef = doc(db, "userchats", user.id);
+      await updateDoc(otherUserChatsRef, {
+        chats: arrayUnion({
+          chatId: newChatRef.id,
+          lastMessage: "",
+          receiverId: currentUser.id,
+          updatedAt: Date.now(),
+        }),
+      });
+
       onClose(); // Close the modal after adding the user
     } catch (err) {
       console.log(err);

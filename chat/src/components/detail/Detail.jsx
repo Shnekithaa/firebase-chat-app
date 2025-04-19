@@ -1,6 +1,6 @@
 import React from "react";
 import "./detail.css";
-import { auth, db } from "../../lib/firebase";
+import { db } from "../../lib/firebase";
 import { useChatStore } from "../../lib/chatStore";
 import { useUserStore } from "../../lib/userStore";
 import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
@@ -38,21 +38,18 @@ function Detail() {
             <div className="photoItem">
               <div className="photoDetail">
                 <img src="" alt="" />
-                <span>photo_2024</span>
+                <span>photo_2025</span>
               </div>
               <img src="./download.png" className="icon" alt="" />
             </div>
           </div>
         </div>
-        <button onClick={handleBlock}>
+        <button onClick={handleBlock} className="block">
           {isCurrentUserBlocked
             ? "You are Blocked"
             : isReceiverBlocked
             ? "User Blocked"
             : "Block User"}
-        </button>
-        <button className="logout" onClick={() => auth.signOut()}>
-          Logout
         </button>
       </div>
     </div>

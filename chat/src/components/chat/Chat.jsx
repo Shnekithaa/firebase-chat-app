@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import EmojiPicker from "emoji-picker-react";
+import Picker from "@emoji-mart/react";
+import data from "@emoji-mart/data";
 import "./chat.css";
 import {
   arrayUnion,
@@ -35,11 +36,9 @@ function Chat() {
   const [chat, setChat] = useState();
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
-  const [img, setImg] = useState({
-    file: null,
-    url: "",
-  });
-  const [showModal, setShowModal] = useState(false); // State for the modal
+  const [img, setImg] = useState({ file: null, url: "" });
+  const [showModal, setShowModal] = useState(false);
+
   const { currentUser } = useUserStore();
   const { chatId, user, isCurrentUserBlocked, isReceiverBlocked, changeChat } =
     useChatStore();
@@ -50,24 +49,28 @@ function Chat() {
   }, []);
 
   useEffect(() => {
+    if (!chatId) {
+      setChat(null);
+      return;
+    }
+
     const unSub = onSnapshot(doc(db, "chats", chatId), (res) => {
       setChat(res.data());
     });
-    return () => {
-      unSub();
-    };
+
+    return () => unSub();
   }, [chatId]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setChat((prevChat) => ({ ...prevChat }));
-    }, 60000); // Update every 60 seconds
+    }, 60000);
 
     return () => clearInterval(interval);
   }, []);
 
-  const handleEmoji = (e) => {
-    setText((prev) => prev + e.emoji);
+  const handleEmoji = (emoji) => {
+    setText((prev) => prev + emoji.native);
     setOpen(false);
   };
 
@@ -82,11 +85,13 @@ function Chat() {
 
   const handleSend = async () => {
     if (text === "") return;
+
     let imgUrl = null;
     try {
       if (img.file) {
         imgUrl = await upload(img.file);
       }
+
       await updateDoc(doc(db, "chats", chatId), {
         messages: arrayUnion({
           senderId: currentUser.id,
@@ -100,11 +105,13 @@ function Chat() {
       userIDs.forEach(async (id) => {
         const userChatsRef = doc(db, "userchats", id);
         const userChatsSnapshot = await getDoc(userChatsRef);
+
         if (userChatsSnapshot.exists()) {
           const userChatsData = userChatsSnapshot.data();
           const chatIndex = userChatsData.chats.findIndex(
             (c) => c.chatId === chatId
           );
+
           userChatsData.chats[chatIndex].lastMessage = text;
           userChatsData.chats[chatIndex].isSeen =
             id === currentUser.id ? true : false;
@@ -116,17 +123,13 @@ function Chat() {
         }
       });
 
-      // Scroll to bottom after sending the message
       setTimeout(() => {
         endRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100); // slight delay to ensure the message is added before scroll
+      }, 100);
     } catch (err) {
       console.log(err);
     } finally {
-      setImg({
-        file: null,
-        url: "",
-      });
+      setImg({ file: null, url: "" });
       setText("");
     }
   };
@@ -146,14 +149,17 @@ function Chat() {
   const handleDeleteChats = async () => {
     try {
       await deleteDoc(doc(db, "chats", chatId));
-      
+
       const userIDs = [currentUser.id, user.id];
       for (const userId of userIDs) {
         const userChatsRef = doc(db, "userchats", userId);
         const userChatsSnapshot = await getDoc(userChatsRef);
+
         if (userChatsSnapshot.exists()) {
           const userChatsData = userChatsSnapshot.data();
-          const updatedChats = userChatsData.chats.filter(chat => chat.chatId !== chatId);
+          const updatedChats = userChatsData.chats.filter(
+            (chat) => chat.chatId !== chatId
+          );
           await updateDoc(userChatsRef, { chats: updatedChats });
         }
       }
@@ -162,7 +168,7 @@ function Chat() {
     } catch (err) {
       console.log(err);
     } finally {
-      setShowModal(false); 
+      setShowModal(false);
     }
   };
 
@@ -174,6 +180,7 @@ function Chat() {
           onConfirm={handleDeleteChats}
         />
       )}
+
       <div className="top">
         <div className="user">
           <img src={user?.avatar || "./avatar.png"} alt="" />
@@ -193,6 +200,7 @@ function Chat() {
           />
         </div>
       </div>
+
       <div className="center">
         {chat?.messages?.map((message) => (
           <div
@@ -212,6 +220,7 @@ function Chat() {
             </div>
           </div>
         ))}
+
         {img.url && (
           <div className="message own">
             <div className="texts">
@@ -221,6 +230,7 @@ function Chat() {
         )}
         <div ref={endRef}></div>
       </div>
+
       <div className="bottom">
         <div className="icons">
           <label htmlFor="file">
@@ -235,6 +245,7 @@ function Chat() {
           <img src="./camera.png" alt="" />
           <img src="./mic.png" alt="" />
         </div>
+
         <input
           type="text"
           placeholder={
@@ -247,16 +258,20 @@ function Chat() {
           onKeyDown={handleKeyDown}
           disabled={isCurrentUserBlocked || isReceiverBlocked}
         />
+
         <div className="emoji">
           <img
             src="./emoji.png"
             alt=""
             onClick={() => setOpen((prev) => !prev)}
           />
-          <div className="picker">
-            <EmojiPicker open={open} onEmojiClick={handleEmoji} />
-          </div>
+          {open && (
+            <div className="picker">
+              <Picker data={data} onEmojiSelect={handleEmoji} theme="dark" />
+            </div>
+          )}
         </div>
+
         <button
           className="sendButton"
           onClick={handleSend}

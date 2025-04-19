@@ -20,7 +20,6 @@ function ChatList() {
       async (res) => {
         if (res.exists()) {
           const items = res.data().chats || [];
-
           const promises = items.map(async (item) => {
             const userDocRef = doc(db, "users", item.receiverId);
             const userDocSnap = await getDoc(userDocRef);
@@ -79,14 +78,7 @@ function ChatList() {
   return (
     <div className="chatList">
       <div className="search">
-        <div className="searchBar">
-          <img src="/search.png" alt="" />
-          <input
-            type="search"
-            placeholder="Search"
-            onChange={(e) => setInput(e.target.value)}
-          />
-        </div>
+        <span className="infoText">Add people to chat</span>
         <img
           src={addModel ? "./minus.png" : "./plus.png"}
           alt=""
@@ -94,35 +86,40 @@ function ChatList() {
           onClick={() => setAddModel((prev) => !prev)}
         />
       </div>
-      {filteredChats.map((chat) => (
-        <div
-          className={`item ${chat.chatId === chatId ? 'active' : ''}`}
-          key={chat.chatId}
-          onClick={() => handleSelect(chat)}
-        >
-          <img
-            src={
-              chat.user.blocked.includes(currentUser.id)
-                ? "./avatar.png"
-                : chat.user.avatar || "./avatar.png"
-            }
-            alt=""
-          />
-          <div className="texts">
+
+      <div className="chatlist-1">
+        {filteredChats.map((chat) => (
+          <div
+            className={`user-container ${
+              chat.chatId === chatId ? "active" : ""
+            }`}
+            key={chat.chatId}
+            onClick={() => handleSelect(chat)}
+          >
+            <img
+              src={
+                chat.user.blocked.includes(currentUser.id)
+                  ? "./avatar.png"
+                  : chat.user.avatar || "./avatar.png"
+              }
+              alt=""
+            />
             <span>
               {chat.user.blocked.includes(currentUser.id)
                 ? "User"
                 : chat.user.username}
             </span>
-            <p>{chat.lastMessage}</p>
           </div>
-        </div>
-      ))}
-      {addModel && (
-        <div ref={modalRef}>
-          <AddUser onClose={() => setAddModel(false)} />
-        </div>
-      )}
+        ))}
+      </div>
+
+      <div className="chatlist-2">
+        {addModel && (
+          <div ref={modalRef}>
+            <AddUser onClose={() => setAddModel(false)} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
